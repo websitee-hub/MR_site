@@ -25,7 +25,7 @@ button{cursor:pointer}
 </head>
 <body>
 <header id="logo">
-<div class="logo">🛍️ MR Loja</div>
+<div class="logo">🚗 MR Loja</div>
 <div class="login-icon" onclick="loginGoogle()">👤</div>
 </header>
 
@@ -60,23 +60,42 @@ const provider=new GoogleAuthProvider();
 let user=null;
 let carrinho=[];
 let admin=false;
+let modoAdminLiberado=false;
+
+const EMAIL_ADMIN=["Lojamr.auto@gmail.com","arthurfigueiredo017@gmail.com"];
 
 window.loginGoogle=async()=>{await signInWithPopup(auth,provider)}
-window.logout=async()=>{await signOut(auth);admin=false;document.getElementById('sairAdmin').style.display='none';document.getElementById('adminBox').style.display='none'}
+
+window.logout=async()=>{
+await signOut(auth);
+admin=false;
+modoAdminLiberado=false;
+document.getElementById('sairAdmin').style.display='none';
+document.getElementById('adminBox').style.display='none'
+}
 
 onAuthStateChanged(auth,u=>{
 user=u;
-if(u){
+
+if(u && modoAdminLiberado && EMAIL_ADMIN.includes(u.email)){ 
 admin=true;
 document.getElementById('sairAdmin').style.display='block';
 document.getElementById('adminBox').style.display='block';
+}else{
+admin=false;
+document.getElementById('adminBox').style.display='none';
 }
 });
 
+// 🔥 ACESSO SECRETO
 let clicks=0;
 document.getElementById('logo').addEventListener('click',()=>{
 clicks++;
-if(clicks===5){loginGoogle();clicks=0}
+if(clicks===5){
+modoAdminLiberado=true;
+loginGoogle();
+clicks=0
+}
 setTimeout(()=>clicks=0,1500);
 });
 
@@ -98,6 +117,12 @@ await addDoc(collection(db,'produtos'),{nome,preco,imagem});
 nomeEl.value='';
 precoEl.value='';
 imagemEl.value='';
+}
+
+// ✅ FUNÇÃO DE EXCLUIR (CORRIGIDA)
+window.excluirProduto=async(id)=>{
+if(!admin)return;
+await deleteDoc(doc(db,'produtos',id));
 }
 
 window.addCarrinho=(nome,preco)=>{
@@ -141,7 +166,6 @@ total+=p.preco*p.qtd;
 
 msg+=`\nTotal: R$ ${total.toFixed(2)}\n\n`;
 
-// NUMERO CORRIGIDO
 const numero='5571991813374';
 window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`);
 }
@@ -153,7 +177,7 @@ lista.innerHTML='';
 snap.forEach(d=>{
 const p=d.data();
 const id=d.id;
-lista.innerHTML+=`<div class="card"><img src="${p.imagem}"/><h4>${p.nome}</h4><p class="preco">R$ ${p.preco}</p><button onclick="addCarrinho('${p.nome}','${p.preco}')">Adicionar</button>${admin?`<button onclick="deleteDoc(doc(db,'produtos','${id}'))">Excluir</button>`:''}</div>`;
+lista.innerHTML+=`<div class="card"><img src="${p.imagem}"/><h4>${p.nome}</h4><p class="preco">R$ ${p.preco}</p><button onclick="addCarrinho('${p.nome}','${p.preco}')">Adicionar</button>${admin?`<button onclick="excluirProduto('${id}')">Excluir</button>`:''}</div>`;
 });
 });
 </script>
