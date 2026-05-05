@@ -62,6 +62,7 @@ let carrinho=[];
 let admin=false;
 let modoAdminLiberado=false;
 
+// 🔒 COLOQUE SEU EMAIL AQUI
 const EMAIL_ADMIN=["lojamr.auto@gmail.com","arthurfigueiredo017@gmail.com"];
 
 window.loginGoogle=async()=>{await signInWithPopup(auth,provider)}
@@ -87,6 +88,7 @@ document.getElementById('adminBox').style.display='none';
 }
 });
 
+// 🔥 ACESSO SECRETO
 let clicks=0;
 document.getElementById('logo').addEventListener('click',()=>{
 clicks++;
@@ -176,7 +178,18 @@ lista.innerHTML='';
 snap.forEach(d=>{
 const p=d.data();
 const id=d.id;
-lista.innerHTML+=`<div class="card"><img src="${p.imagem}"/><h4>${p.nome}</h4><p class="preco">R$ ${p.preco}</p><button onclick="addCarrinho('${p.nome}','${p.preco}')">Adicionar</button>${admin?`<button onclick="excluirProduto('${id}')">Excluir</button>`:''}</div>`;
+
+// 🔥 agora verifica admin em tempo real corretamente
+const botoesAdmin = admin ? `<button onclick="excluirProduto('${id}')">Excluir</button>` : '';
+
+lista.innerHTML+=`<div class="card">
+<img src="${p.imagem}"/>
+<h4>${p.nome}</h4>
+<p class="preco">R$ ${p.preco}</p>
+<button onclick="addCarrinho('${p.nome}','${p.preco}')">Adicionar</button>
+${botoesAdmin}
+</div>`;
+});
 });
 });
 </script>
