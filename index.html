@@ -62,7 +62,7 @@ let carrinho=[];
 let admin=false;
 let modoAdminLiberado=false;
 
-const EMAIL_ADMIN=["Lojamr.auto@gmail.com","arthurfigueiredo017@gmail.com"];
+const EMAIL_ADMIN=["lojamr.auto@gmail.com","arthurfigueiredo017@gmail.com"];
 
 window.loginGoogle=async()=>{await signInWithPopup(auth,provider)}
 
@@ -77,7 +77,7 @@ document.getElementById('adminBox').style.display='none'
 onAuthStateChanged(auth,u=>{
 user=u;
 
-if(u && modoAdminLiberado && EMAIL_ADMIN.includes(u.email)){ 
+if(u && modoAdminLiberado && EMAIL_ADMIN.includes(u.email.toLowerCase())){ 
 admin=true;
 document.getElementById('sairAdmin').style.display='block';
 document.getElementById('adminBox').style.display='block';
@@ -87,7 +87,6 @@ document.getElementById('adminBox').style.display='none';
 }
 });
 
-// 🔥 ACESSO SECRETO
 let clicks=0;
 document.getElementById('logo').addEventListener('click',()=>{
 clicks++;
